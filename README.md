@@ -4,6 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download)
 [![NuGet](https://img.shields.io/badge/NuGet-1.0.0-blue.svg)](https://www.nuget.org/packages/MarcusMedina.Fluent.Data.Sql/)
 [![Tests](https://img.shields.io/badge/tests-65%20passed-brightgreen)]()
+[![Signed](https://img.shields.io/badge/Signed-Sigstore-green?style=for-the-badge&logo=linux)](https://docs.sigstore.dev)
 
 **Fluent SQL query builder for .NET 10+** — generate parameterized SQL strings without a database connection.
 
