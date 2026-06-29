@@ -1,0 +1,106 @@
+# Auto-Tag Workflow Template
+# Läser version från .csproj, skapar tag, triggar release.
+# Kräver: WORKFLOW_PAT (PAT med actions:write + contents:write på repot)
+# Kräver: NUGET_API_KEY (för release-pipelinen)
+#
+# Installationsinstruktioner för nytt repo:
+#   1. Skapa en PAT (Fine-grained, repo: contents:write + actions:write)
+#   2. Sätt secret: Settings → Secrets → Actions → WORKFLOW_PAT
+#   3. Sätt secret: Settings → Secrets → Actions → NUGET_API_KEY
+#   4. Aktivera: Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests"
+
+name: 🏷️ Auto-Tag on Version Bump
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.csproj'
+  workflow_dispatch:
+    inputs:
+      manual_version:
+        description: 'Ange version (lämna tom för att läsa från csproj)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  auto-tag:
+    runs-on: ubuntu-latest
+    name: Create tag from version
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Read version from .csproj
+        id: version
+        run: |
+          if [ -n "${{ inputs.manual_version }}" ]; then
+            VERSION="${{ inputs.manual_version }}"
+            echo "📝 Using manual version: $VERSION"
+          else
+            CSPROJ=$(find . -name '*.csproj' \
+              -not -path '*Test*' \
+              -not -path '*Demo*' \
+              -not -path '*/obj/*' \
+              -not -path '*Sample*' \
+              | head -1)
+            echo "📄 Found csproj: $CSPROJ"
+            VERSION=$(grep -m1 -oP '(?<=<Version>)[^<]+' "$CSPROJ" | tr -d '[:space:]')
+            echo "📦 Version from csproj: $VERSION"
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "❌ No version found!"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if ! echo "$VERSION" | grep -qP '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "   Expected: major.minor.patch or major.minor.patch-prerelease"
+            exit 1
+          fi
+          echo "✅ Version format OK: $VERSION"
+
+      - name: Check if tag exists
+        id: tag_check
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "⚠️  Tag $TAG already exists — skipping"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "✅ Tag $TAG is new — will create"
+          fi
+
+      - name: Create and push tag
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+          echo "✅ Created and pushed tag $TAG"
+
+      - name: Trigger release pipeline
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          gh workflow run release.yml --ref "v${{ steps.version.outputs.version }}"
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_PAT }}

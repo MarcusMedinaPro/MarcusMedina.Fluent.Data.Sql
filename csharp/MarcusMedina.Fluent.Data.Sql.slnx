@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/MarcusMedina.Fluent.Data.Sql/MarcusMedina.Fluent.Data.Sql.csproj" />
+  <Project Path="tests/MarcusMedina.Fluent.Data.Sql.Tests/MarcusMedina.Fluent.Data.Sql.Tests.csproj" />
+</Solution>
