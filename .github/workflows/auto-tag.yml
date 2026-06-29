@@ -21,7 +21,7 @@ jobs:
       - name: Read version from .csproj
         id: version
         run: |
-          CSPROJ=$(find . -name '*.csproj' -not -path '*Test*' -not -path '*Demo*' -not -path '*/obj/*' | head -1)
+          CSPROJ=$(find . -name '*.csproj' -not -path '*Test*' -not -path '*Demo*' -not -path '*Example*' -not -path '*example*' -not -path '*UseCase*' -not -path '*usecase*' -not -path '*Sample*' -not -path '*/obj/*' | head -1)
           VERSION=$(grep -m1 -oP '(?<=<Version>)[^<]+' "$CSPROJ" | tr -d '[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
