@@ -1,7 +1,9 @@
-# Release Workflow Template
-# Använd för NuGet-paket med .NET 10+
+name: 🚀 Release - Full Pipeline
 
-name: Release
+# ⚙️ SETUP: Replace the two variables below after using this template
+env:
+  SOLUTION_FILE: csharp/MarcusMedina.Fluent.Data.Sql.slnx        # e.g. csharp/MyPackage.slnx
+  PROJECT_PATH: csharp/src/MarcusMedina.Fluent.Data.Sql/MarcusMedina.Fluent.Data.Sql.csproj  # e.g. csharp/src/MyPackage/MyPackage.csproj
 
 on:
   push:
@@ -15,57 +17,35 @@ permissions:
   packages: write
   id-token: write
 
-env:
-  DOTNET_VERSION: '10.0.x'
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     name: 1️⃣ Build & Test
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: 10.0.x
 
-      - name: Restore
-        run: dotnet restore
-        working-directory: ./csharp
+      - run: dotnet restore ${{ env.SOLUTION_FILE }}
+        name: Restore
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-        working-directory: ./csharp
+      - run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+        name: Build
 
-      - name: Test
-        run: |
-          dotnet test \
-            --configuration Release \
-            --no-build \
-            --verbosity normal \
-            --logger trx
-        working-directory: ./csharp
+      - run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-build --verbosity normal --logger trx
+        name: Test
 
-      - name: Pack
-        run: |
-          dotnet pack \
-            --configuration Release \
-            --no-build \
-            --output ./nupkgs
-        working-directory: ./csharp
+      - run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./nupkgs
+        name: Pack
 
-      - name: Upload unsigned packages
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: unsigned-packages
-          path: ./csharp/nupkgs/*.nupkg
+          path: ./nupkgs/*.nupkg
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
@@ -76,38 +56,31 @@ jobs:
     runs-on: ubuntu-latest
     name: 2️⃣ Code Quality
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: 10.0.x
 
-      - name: Restore
-        run: dotnet restore
-        working-directory: ./csharp
+      - run: dotnet restore ${{ env.SOLUTION_FILE }}
+        name: Restore
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+      - uses: github/codeql-action/init@v3
         with:
           languages: csharp
           queries: security-extended,security-and-quality
 
-      - name: Build for CodeQL
-        run: dotnet build --configuration Release --no-restore
-        working-directory: ./csharp
+      - run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+        name: Build for CodeQL
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-
-      - name: Dependency Vulnerability Scan
-        run: |
-          dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+      - uses: github/codeql-action/analyze@v3
         continue-on-error: true
 
-      - name: Upload quality reports
-        uses: actions/upload-artifact@v7
+      - run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+        name: Dependency Vulnerability Scan
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-reports
@@ -120,16 +93,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
-      - name: Download unsigned packages
-        uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: unsigned-packages
           path: ./unsigned
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v4
+      - uses: sigstore/cosign-installer@v3
 
       - name: Sign packages
         run: |
@@ -143,10 +113,8 @@ jobs:
         run: |
           cd unsigned
           sha256sum *.nupkg > SHA256SUMS.txt
-          cat SHA256SUMS.txt
 
-      - name: Upload signed packages
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: signed-packages
           path: |
@@ -160,16 +128,13 @@ jobs:
     name: 4️⃣ Publish to NuGet.org
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: 10.0.x
 
-      - name: Download signed packages
-        uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: signed-packages
           path: ./packages
@@ -182,7 +147,7 @@ jobs:
             --skip-duplicate
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             ./packages/*.nupkg

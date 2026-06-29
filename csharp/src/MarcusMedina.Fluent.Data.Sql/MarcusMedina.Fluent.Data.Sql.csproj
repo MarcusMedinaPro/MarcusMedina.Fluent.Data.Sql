@@ -10,16 +10,17 @@
     <Version>1.0.0</Version>
     <Authors>Marcus Medina</Authors>
     <Company>MarcusMedinaPro</Company>
-    <Description>SQL-style string extensions for pattern matching (LIKE, IN, BETWEEN) in .NET</Description>
+    <Description>Fluent SQL query builder for .NET — generate SQL with a chainable API (SELECT, WHERE, LIKE, IN, BETWEEN, IS NULL)</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>fluent;sql;like;pattern;string;extensions;dotnet</PackageTags>
+    <PackageTags>fluent;sql;querybuilder;builder;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\assets\open-source.svg" Pack="true" PackagePath="assets\" />
   </ItemGroup>
 </Project>
