@@ -56,6 +56,7 @@ public class Sql
     private int? _offset;
     private readonly List<(JoinType type, string table, string on)> _joins = [];
 
+    /// <summary>Skapar en ny SQL-byggare för angiven databastyp.</summary>
     /// <param name="dbType">Databastyp som styr escaping av namn.</param>
     public Sql(DatabaseType dbType)
     {
