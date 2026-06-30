@@ -334,13 +334,13 @@ public class Sql
         return $"{quote}{name}{quote}";
     }
 
-    private string EscapeValue(object value)
+    private string EscapeValue(object? value)
     {
-        if (value == null) return "NULL";
+        if (value is null) return "NULL";
         if (value is int or long or short or byte or float or double or decimal)
-            return Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture)!;
+            return Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "NULL";
         if (value is bool b) return b ? "1" : "0";
-        return $"'{EscapeString(value.ToString()!)}'";
+        return $"'{EscapeString(value.ToString() ?? string.Empty)}'";
     }
 
     private static string EscapeString(string value)
