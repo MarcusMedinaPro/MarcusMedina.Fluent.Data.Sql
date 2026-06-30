@@ -1,8 +1,7 @@
-# Test Workflow Template
-# Full kvalitetskontroll på test-grenen: bygg, test, CodeQL, sårbarhetsscan.
-# Används före merge till main för att fånga problem tidigt.
+# Full kvalitetskontroll på test-grenen — körs innan merge till main.
+# Säkerhetsscanners körs i separata workflows (security-code-scan.yml, osv-scanner.yml).
 
-name: 🔍 Test — Unit Tests + Code Quality
+name: 🔍 Test — Full Quality Gate
 
 on:
   push:
@@ -58,10 +57,32 @@ jobs:
           name: test-results
           path: '**/TestResults/**/*.trx'
 
-  quality-gate:
+  test-matrix:
+    needs: build-and-test
+    name: 2️⃣ Cross-platform (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore & Test
+        run: dotnet test --configuration Release
+        working-directory: ./csharp
+
+  codeql:
     needs: build-and-test
     runs-on: ubuntu-latest
-    name: 2️⃣ Code Quality
+    name: 3️⃣ CodeQL
 
     steps:
       - name: Checkout
@@ -89,15 +110,26 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
 
-      - name: Dependency Vulnerability Scan
-        run: |
-          dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
-        continue-on-error: true
+  pack:
+    needs: [test-matrix, codeql]
+    runs-on: ubuntu-latest
+    name: 4️⃣ Pack
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Pack
+        run: dotnet pack --configuration Release --output ./artifacts
         working-directory: ./csharp
 
-      - name: Upload quality reports
+      - name: Upload package
         uses: actions/upload-artifact@v7
-        if: always()
         with:
-          name: quality-reports
-          path: vulnerability-report.txt
+          name: nuget-package
+          path: ./csharp/artifacts/*.nupkg

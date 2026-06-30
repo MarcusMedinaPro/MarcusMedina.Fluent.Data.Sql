@@ -2,8 +2,8 @@ name: 🚀 Release - Full Pipeline
 
 # ⚙️ SETUP: Replace the two variables below after using this template
 env:
-  SOLUTION_FILE: csharp/MarcusMedina.Fluent.Data.Sql.slnx        # e.g. csharp/MyPackage.slnx
-  PROJECT_PATH: csharp/src/MarcusMedina.Fluent.Data.Sql/MarcusMedina.Fluent.Data.Sql.csproj  # e.g. csharp/src/MyPackage/MyPackage.csproj
+  SOLUTION_FILE: csharp/PACKAGE_NAME.slnx        # e.g. csharp/MyPackage.slnx
+  PROJECT_PATH: csharp/src/PACKAGE_NAME/PACKAGE_NAME.csproj  # e.g. csharp/src/MyPackage/MyPackage.csproj
 
 on:
   push:
