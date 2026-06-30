@@ -17,10 +17,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>fluent;sql;querybuilder;builder;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\assets\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\..\assets\open-source.svg" Pack="true" PackagePath="assets\" />
   </ItemGroup>
 </Project>
