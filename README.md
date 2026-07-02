@@ -1,14 +1,19 @@
 # MarcusMedina.Fluent.Data.Sql
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download)
-[![NuGet](https://img.shields.io/badge/NuGet-1.0.0-blue.svg)](https://www.nuget.org/packages/MarcusMedina.Fluent.Data.Sql/)
-[![Tests](https://img.shields.io/badge/tests-65%20passed-brightgreen)]()
+[![NuGet](https://img.shields.io/nuget/v/MarcusMedina.Fluent.Data.Sql.svg?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/MarcusMedina.Fluent.Data.Sql/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/MarcusMedina.Fluent.Data.Sql.svg?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/MarcusMedina.Fluent.Data.Sql/)
+[![C#](https://img.shields.io/badge/C%23-14.0-239120?style=for-the-badge&logo=csharp&logoColor=white)](#)
+[![.NET](https://img.shields.io/badge/.NET-10.0+-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Open Source](https://raw.githubusercontent.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql/main/assets/open-source.svg)](https://opensource.org)
+[![Build](https://img.shields.io/github/actions/workflow/status/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql/release.yml?branch=main&label=Build&style=for-the-badge&logo=github)](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql/actions)
 [![Signed](https://img.shields.io/badge/Signed-Sigstore-green?style=for-the-badge&logo=linux)](https://docs.sigstore.dev)
 
 **Fluent SQL query builder for .NET 10+** — generate parameterized SQL strings without a database connection.
 
 Build `SELECT`, `INSERT`, `UPDATE`, `DELETE` statements fluently with automatic escaping per database dialect.
+
+> **Story:** _TODO — ask Marcus for the real background behind this package._
 
 ---
 
@@ -120,7 +125,7 @@ Tests: **65 passed** — covering all dialects, query types, edge cases, and esc
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql/blob/main/LICENSE) for details.
 
 ---
 
