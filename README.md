@@ -13,7 +13,9 @@
 
 Build `SELECT`, `INSERT`, `UPDATE`, `DELETE` statements fluently with automatic escaping per database dialect.
 
-> **Story:** _TODO — ask Marcus for the real background behind this package._
+> This came from watching my students struggle with writing SQL by hand. I designed this to help them along the way — though, cheekily, before the course ended they still had to wrestle with raw query strings anyway.
+>
+> In this case, I wanted a builder that produces the exact same parameterised SQL a student would eventually have to write themselves, so it doubles as a way to check your own work.
 
 ---
 
