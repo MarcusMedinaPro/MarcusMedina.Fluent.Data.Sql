@@ -131,6 +131,24 @@ MIT — see [LICENSE](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Dat
 
 ---
 
+## Built with Human + AI Collaboration
+
+This library was written by **Marcus Medina** together with **Claude Code** (Anthropic) — not through "vibe coding" where you just describe and accept, but through genuine collaboration: planning together, reviewing each other's decisions, pushing back when something felt wrong, and iterating until the result felt right.
+
+The goal was always to write code worth reading and code worth using — the kind a student can open, understand, and learn from, and the kind any programmer can drop into real, professional work without wanting to rewrite it from scratch. AI was a partner in that process, not a shortcut around it.
+
+If you're curious about this way of working, the source code and git history are open. Every decision has a reason behind it.
+
+## Made for Curious Minds
+
+This library was built with students in mind — not as a black box to copy and paste, but as a real-world example of how clean, purposeful code is written and shared. At the same time, it's built to be genuinely useful in professional projects too — for any developer who's tired of writing the same code over and over.
+
+Whether you're discovering C# for the first time, need a reliable helper for your school project, want a dependable building block for production work, or are simply trying to fall in love with writing code — you're exactly who this was made for.
+
+The source is open. Read it, fork it, break it, improve it. That's the whole point.
+
+---
+
 ## Related Projects
 
 - [MarcusMedina.Fluent.Data](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data) — CSV, JSON, XML extensions
