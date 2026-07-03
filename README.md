@@ -150,6 +150,21 @@ The source is open. Read it, fork it, break it, improve it. That's the whole poi
 
 ---
 
+## Package Integrity
+
+All releases are signed with [cosign](https://docs.sigstore.dev) (Sigstore keyless signing).
+
+To verify a downloaded package, download both the `.nupkg` and its `.sigstore.json` bundle from the [GitHub Release](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data.Sql/releases), then run:
+
+```bash
+cosign verify-blob <package.nupkg> \
+  --bundle <package.nupkg.sigstore.json> \
+  --certificate-identity-regexp "https://github.com/MarcusMedinaPro/.*/release.yml" \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+Expected output: `Verified OK`
+
 ## Related Projects
 
 - [MarcusMedina.Fluent.Data](https://github.com/MarcusMedinaPro/MarcusMedina.Fluent.Data) — CSV, JSON, XML extensions
