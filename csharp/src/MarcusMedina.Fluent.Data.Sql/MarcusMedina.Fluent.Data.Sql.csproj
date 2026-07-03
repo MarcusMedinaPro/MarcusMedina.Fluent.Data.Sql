@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>MarcusMedina.Fluent.Data.Sql</RootNamespace>
     <PackageId>MarcusMedina.Fluent.Data.Sql</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Marcus Medina</Authors>
     <Company>MarcusMedinaPro</Company>
     <Description>Fluent SQL query builder for .NET — generate SQL with a chainable API (SELECT, WHERE, LIKE, IN, BETWEEN, IS NULL)</Description>
