@@ -54,7 +54,7 @@ public class Sql
     private readonly List<(string field, bool asc)> _orderBy = [];
     private int? _limit;
     private int? _offset;
-    private readonly List<(JoinType type, string table, string on)> _joins = [];
+    private readonly List<(JoinType type, string table, string? alias, string on)> _joins = [];
 
     /// <summary>Skapar en ny SQL-byggare för angiven databastyp.</summary>
     /// <param name="dbType">Databastyp som styr escaping av namn.</param>
@@ -181,11 +181,15 @@ public class Sql
     }
 
     /// <summary>Lägg till en JOIN. Anropa efter .Table().</summary>
-    public Sql Join(string table, string on, JoinType type = JoinType.Inner)
+    /// <param name="table">Tabellnamn (utan alias — använd <paramref name="alias"/> för det).</param>
+    /// <param name="on">Rå ON-villkorssträng, skrivs ut oescapad.</param>
+    /// <param name="type">Typ av join.</param>
+    /// <param name="alias">Valfritt alias för tabellen, t.ex. "c" i "customers c".</param>
+    public Sql Join(string table, string on, JoinType type = JoinType.Inner, string? alias = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(table);
         ArgumentException.ThrowIfNullOrWhiteSpace(on);
-        _joins.Add((type, table, on));
+        _joins.Add((type, table, alias, on));
         return this;
     }
 
@@ -250,7 +254,7 @@ public class Sql
 
     private void BuildJoins(StringBuilder sb)
     {
-        foreach (var (type, table, on) in _joins)
+        foreach (var (type, table, alias, on) in _joins)
         {
             var keyword = type switch
             {
@@ -261,7 +265,8 @@ public class Sql
                 JoinType.Cross => "CROSS JOIN",
                 _ => "INNER JOIN"
             };
-            sb.Append($" {keyword} {EscapeName(table)} ON {on}");
+            var tableRef = string.IsNullOrWhiteSpace(alias) ? EscapeName(table) : $"{EscapeName(table)} {alias}";
+            sb.Append($" {keyword} {tableRef} ON {on}");
         }
     }
 
@@ -319,17 +324,24 @@ public class Sql
 
     private string EscapeName(string name)
     {
+        if (name.Contains('.'))
+            return string.Join(".", name.Split('.').Select(EscapeSingleName));
+
+        return EscapeSingleName(name);
+    }
+
+    private string EscapeSingleName(string name)
+    {
+        if (_dbType == DatabaseType.SqlServer)
+            return $"[{name}]";
+
         var quote = _dbType switch
         {
             DatabaseType.PostgreSQL => '"',
             DatabaseType.MySQL => '`',
             DatabaseType.SQLite => '"',
-            DatabaseType.SqlServer => '[',
             _ => ' '
         };
-
-        if (_dbType == DatabaseType.SqlServer)
-            return $"[{name}]";
 
         return $"{quote}{name}{quote}";
     }

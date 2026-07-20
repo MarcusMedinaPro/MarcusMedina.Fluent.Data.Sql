@@ -548,6 +548,77 @@ public class SqlBuilderTests
         act.Should().Throw<ArgumentException>();
     }
 
+    [Fact]
+    public void Join_WithAlias_EscapesTableNameOnly()
+    {
+        var sql = new Sql(DatabaseType.SqlServer)
+            .Table("orders")
+            .Select("o.id", "c.name")
+            .Join("customers", "c.id = o.customer_id", alias: "c")
+            .Build();
+
+        sql.Should().Be("SELECT [o].[id], [c].[name] FROM [orders] INNER JOIN [customers] c ON c.id = o.customer_id;");
+    }
+
+    [Fact]
+    public void Join_WithoutAlias_Unaffected()
+    {
+        var sql = new Sql(DatabaseType.SqlServer)
+            .Table("users")
+            .Join("orders", "orders.user_id = users.id")
+            .Build();
+
+        sql.Should().Be("SELECT * FROM [users] INNER JOIN [orders] ON orders.user_id = users.id;");
+    }
+
+    #endregion
+
+    #region Qualified names
+
+    [Fact]
+    public void Select_QualifiedColumn_EscapesEachPartSeparately_SqlServer()
+    {
+        var sql = new Sql(DatabaseType.SqlServer)
+            .Table("orders")
+            .Select("o.id")
+            .Build();
+
+        sql.Should().Be("SELECT [o].[id] FROM [orders];");
+    }
+
+    [Fact]
+    public void Select_QualifiedColumn_EscapesEachPartSeparately_PostgreSQL()
+    {
+        var sql = new Sql(DatabaseType.PostgreSQL)
+            .Table("orders")
+            .Select("o.id")
+            .Build();
+
+        sql.Should().Be("SELECT \"o\".\"id\" FROM \"orders\";");
+    }
+
+    [Fact]
+    public void OrderBy_QualifiedField_EscapesEachPartSeparately()
+    {
+        var sql = new Sql(DatabaseType.SqlServer)
+            .Table("orders")
+            .OrderBy("o.total")
+            .Build();
+
+        sql.Should().Be("SELECT * FROM [orders] ORDER BY [o].[total] ASC;");
+    }
+
+    [Fact]
+    public void Is_QualifiedField_EscapesEachPartSeparately()
+    {
+        var sql = new Sql(DatabaseType.SqlServer)
+            .Table("orders")
+            .Is("o.status", "shipped")
+            .Build();
+
+        sql.Should().Be("SELECT * FROM [orders] WHERE [o].[status] = 'shipped';");
+    }
+
     #endregion
 
     #region OrderBy
@@ -735,7 +806,7 @@ public class SqlBuilderTests
             .Offset(0)
             .Build();
 
-        sql.Should().Be("SELECT `u.id`, `u.name`, `o.total` FROM `users` LEFT JOIN `orders` ON o.user_id = u.id WHERE `u.active` = 1 OR `u.role` = 'admin' ORDER BY `u.name` ASC LIMIT 25 OFFSET 0;");
+        sql.Should().Be("SELECT `u`.`id`, `u`.`name`, `o`.`total` FROM `users` LEFT JOIN `orders` ON o.user_id = u.id WHERE `u`.`active` = 1 OR `u`.`role` = 'admin' ORDER BY `u`.`name` ASC LIMIT 25 OFFSET 0;");
     }
 
     #endregion
