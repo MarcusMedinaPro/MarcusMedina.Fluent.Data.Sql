@@ -99,7 +99,7 @@ jobs:
           name: unsigned-packages
           path: ./unsigned
 
-      - uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
 
       - name: Sign packages
         run: |
@@ -140,7 +140,7 @@ jobs:
           path: ./packages
 
       - name: NuGet login (OIDC -> temp API key)
-        uses: NuGet/login@v1
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
         id: login
         with:
           user: ${{ secrets.NUGET_USER }}
@@ -153,7 +153,7 @@ jobs:
             --skip-duplicate
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |
             ./packages/*.nupkg
